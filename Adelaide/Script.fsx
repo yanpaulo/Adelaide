@@ -1,7 +1,8 @@
 ﻿// Saiba mais sobre F# em http://fsharp.org
 // Veja o projeto 'F# Tutorial' para obter mais ajuda.
 
-[<EntryPoint>]
-let main argv = 
-    printfn "%A" argv
-    0 // retornar um código de saída inteiro
+#load "Library1.fs"
+open Definitions
+
+// Defina seu código de script de biblioteca aqui
+

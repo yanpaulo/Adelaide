@@ -1,4 +1,4 @@
-﻿namespace Definitions.AssemblyInfo
+﻿namespace Adelaide.AssemblyInfo
 
 open System.Reflection
 open System.Runtime.CompilerServices
@@ -7,11 +7,11 @@ open System.Runtime.InteropServices
 // As informações gerais sobre um assembly são controladas por meio do seguinte
 // conjunto de atributos. Altere estes valores de atributo para modificar as informações
 // associados a um assembly.
-[<assembly: AssemblyTitle("Definitions")>]
+[<assembly: AssemblyTitle("Adelaide")>]
 [<assembly: AssemblyDescription("")>]
 [<assembly: AssemblyConfiguration("")>]
 [<assembly: AssemblyCompany("")>]
-[<assembly: AssemblyProduct("Definitions")>]
+[<assembly: AssemblyProduct("Adelaide")>]
 [<assembly: AssemblyCopyright("Copyright ©  2018")>]
 [<assembly: AssemblyTrademark("")>]
 [<assembly: AssemblyCulture("")>]
@@ -22,7 +22,7 @@ open System.Runtime.InteropServices
 [<assembly: ComVisible(false)>]
 
 // O GUID a seguir é para a ID de typelib quando este projeto é exposto a COM
-[<assembly: Guid("2c17b924-7596-4363-8d17-96b2e39f3c09")>]
+[<assembly: Guid("a60a639c-7650-41fc-aee1-703567cf29ff")>]
 
 // As informações da versão de um assembly consistem nos quatro valores a seguir:
 //
