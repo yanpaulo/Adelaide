@@ -53,7 +53,6 @@ namespace Adelaide.Function2
             base.Initialize();
             InitializeCamera();
             InitializePlotData();
-
         }
 
         private void InitializeCamera()
@@ -82,8 +81,8 @@ namespace Adelaide.Function2
 
         private void InitializePlotData()
         {
-            var treinamento = adalineXYZ.Item1;
-            var vetorW = adalineXYZ.Item2;
+            var treinamento = realizaXYZ.Treinamento;
+            var vetorW = realizaXYZ.W;
 
             eixo = new[]
             {
@@ -150,13 +149,21 @@ namespace Adelaide.Function2
             }
             if (Keyboard.GetState().IsKeyDown(Keys.Up))
             {
-                camPosition.Y -= 1f;
-                camTarget.Y -= 1f;
+                //camPosition.Y -= 1f;
+                //camTarget.Y -= 1f;
+                Matrix rotationMatrix = Matrix.CreateRotationX(
+                                        MathHelper.ToRadians(1f));
+                camPosition = Vector3.Transform(camPosition,
+                              rotationMatrix);
             }
             if (Keyboard.GetState().IsKeyDown(Keys.Down))
             {
-                camPosition.Y += 1f;
-                camTarget.Y += 1f;
+                //camPosition.Y += 1f;
+                //camTarget.Y += 1f;
+                Matrix rotationMatrix = Matrix.CreateRotationX(
+                                        MathHelper.ToRadians(-1f));
+                camPosition = Vector3.Transform(camPosition,
+                              rotationMatrix);
             }
             if (Keyboard.GetState().IsKeyDown(Keys.OemPlus))
             {

@@ -2,11 +2,13 @@
 
 open System
 open MathNet.Numerics.Random
+open MathNet.Numerics.Statistics
 open MathNet.Numerics.LinearAlgebra
 
 let square x = Math.Pow(x, 2.0)
 
 type Par = { X: float Vector; Y: float }
+type Resultado = { MSE: float; RMSE: float; W: float Vector; Treinamento: Par seq;  }
 
 let ruido rate x = 
     x + rate * (Random.shared.NextDouble() - 0.5)
@@ -25,7 +27,7 @@ let erro par w =
 
 let squareErro t w =
     t |>
-    List.map (fun t -> t.Y - saida w t.X |> square) |>
+    List.map (fun par -> erro par w |> square) |>
     List.sum
 
 let squareRootErro t w =
@@ -52,37 +54,52 @@ let wn t =
     wn1 t w
 
 
-let adalineXY =
+let adalineXY range =
     let vx x = vector([1.0; x])
-    let range = [ 0.0 .. 20.0 ]
     let treinamento = 
         range |>
         List.map (fun x -> { X = vx x; Y = f2 x |> ruido 2.0 })
 
     let w1 = wn (List.ofSeq treinamento)
+    
 
-    let pointData = 
-        treinamento |> 
-        List.map (fun par -> ((par.X |> Seq.last), par.Y))
+    { MSE = squareErro treinamento w1 ; RMSE = squareRootErro treinamento w1; Treinamento = treinamento; W = w1 }
 
-
-    let lineData = 
-        range |>
-        List.map (fun x -> (x, saida w1 (vx x)))
-    (pointData, lineData)
-
-let adalineXYZ =
+let adalineXYZ range =
     let vx x = vector([1.0; x; x])
-    let range = [ 0.0 .. 20.0 ]
     let treinamento = 
         range |>
-        List.map (fun x -> { X = vx x; Y = f3 x x |> ruido 20.0 })
+        List.map (fun x -> { X = vx x; Y = f3 x x |> ruido 10.0 })
 
     let w1 = wn (List.ofSeq treinamento)
 
-    (Seq.ofList treinamento, w1)
+    { MSE = squareErro treinamento w1 ; RMSE = squareRootErro treinamento w1; Treinamento = treinamento; W = w1 }
 
+let realizaXY =
+    let range = [0.0 .. 20.0]
+    let realizacoes = 
+        [0 .. 20] |>
+        List.map (fun _ -> adalineXY range)
+    let desvio = realizacoes |> List.map(fun r -> r.RMSE) |> Statistics.StandardDeviation
+    printfn "\nArtificial 1:\nDesvio padrão: %f" desvio
+    
+    let min = realizacoes |> List.minBy (fun r -> r.RMSE)
+    printfn "%A" min
+    min
+    
 
+let realizaXYZ =
+    let range = [0.0 .. 20.0]
+    let realizacoes = 
+        [0 .. 20] |>
+        List.map (fun _ -> adalineXYZ range)
+    
+    let desvio = realizacoes |> List.map(fun r -> r.RMSE) |> Statistics.StandardDeviation
+    printfn "\nArtificial 2:\nDesvio padrão: %f" desvio
+    
+    let min = realizacoes |> List.minBy (fun r -> r.RMSE)
+    printfn "%A" min
+    min
 
 //#load "FSharp.Charting.fsx"
 //Chart.Point [ for x in 1.0 .. 10.0 -> (x, f2 x) ]
