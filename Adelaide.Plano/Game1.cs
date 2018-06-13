@@ -105,10 +105,10 @@ namespace Adelaide.Function2
             plano = new[]
             {
                 new VertexPositionColor(NewVector3(0, 0, 0), Color.Red),
-                new VertexPositionColor(NewVector3(20, 20, 0), Color.Green),
+                new VertexPositionColor(NewVector3(20, 0, saida(vetorW, MNVector(20, 20))), Color.Green),
                 new VertexPositionColor(NewVector3(20, 20, saida(vetorW, MNVector(20, 20))), Color.Blue),
                 new VertexPositionColor(NewVector3(20, 20, saida(vetorW, MNVector(20, 20))), Color.Blue),
-                new VertexPositionColor(NewVector3(0, 0, saida(vetorW, MNVector(20, 20))), Color.Red),
+                new VertexPositionColor(NewVector3(0, 20, 0), Color.Green),
                 new VertexPositionColor(NewVector3(0, 0, 0), Color.Red),
             };
 

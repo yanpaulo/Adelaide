@@ -75,7 +75,7 @@ let adelaideF3 =
     let range = [ 0.0 .. 20.0 ]
     let treinamento = 
         range |>
-        List.map (fun x -> { X = vx x; Y = f3 x x |> noise 10.0 })
+        List.map (fun x -> { X = vx x; Y = f3 x x |> noise 20.0 })
 
     let w1 = wn (List.ofSeq treinamento)
 

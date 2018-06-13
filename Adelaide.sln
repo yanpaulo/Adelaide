@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27703.2000
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Program", "Program\Program.fsproj", "{A60A639C-7650-41FC-AEE1-703567CF29FF}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Adelaide.Reta", "Adelaide.Reta\Adelaide.Reta.fsproj", "{A60A639C-7650-41FC-AEE1-703567CF29FF}"
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Adelaide", "Adelaide\Adelaide.fsproj", "{2C17B924-7596-4363-8D17-96B2E39F3C09}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Adelaide.Function2", "Adelaide.Function2\Adelaide.Function2.csproj", "{6F151833-D08D-4A30-B7D1-4226FCCD1919}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Adelaide.Plano", "Adelaide.Plano\Adelaide.Plano.csproj", "{6F151833-D08D-4A30-B7D1-4226FCCD1919}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
