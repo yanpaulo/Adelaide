@@ -1,6 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System;
+using System.Linq;
 
 namespace Adelaide.Function2
 {
@@ -23,7 +25,7 @@ namespace Adelaide.Function2
         BasicEffect basicEffect;
 
         //Geometric info
-        VertexPositionColor[] triangleVertices;
+        private VertexPositionColor[] vertices;
         VertexBuffer vertexBuffer;
 
         //Orbit
@@ -66,23 +68,36 @@ namespace Adelaide.Function2
 
             // Want to see the colors of the vertices
             basicEffect.VertexColorEnabled = true;
-            
-            basicEffect.LightingEnabled = false;
 
+            basicEffect.LightingEnabled = false;
+            
             //Geometry  - a simple triangle about the origin
-            triangleVertices = new VertexPositionColor[3];
-            triangleVertices[0] = new VertexPositionColor(new Vector3(
-                                  0, 20, 0), Color.Red);
-            triangleVertices[1] = new VertexPositionColor(new Vector3(-
-                                  20, -20, 0), Color.Green);
-            triangleVertices[2] = new VertexPositionColor(new Vector3(
-                                  20, -20, 0), Color.Blue);
+            vertices = new[] 
+            {
+                new VertexPositionColor(new Vector3(0, 0, 0), Color.Red),
+                new VertexPositionColor(new Vector3(20, 20, 0), Color.Green),
+                new VertexPositionColor(new Vector3(20, 20, Module.f3(20, 20)), Color.Blue),
+                new VertexPositionColor(new Vector3(20, 20, Module.f3(20, 20)), Color.Blue),
+                new VertexPositionColor(new Vector3(0, 0, Module.f3(20, 20)), Color.Green),
+                new VertexPositionColor(new Vector3(0, 0, 0), Color.Red),
+
+
+                new VertexPositionColor(new Vector3(-40, 0, 0), Color.Gray),
+                new VertexPositionColor(new Vector3(40, 0, 0), Color.Gray),
+
+                new VertexPositionColor(new Vector3(0, -40, 0), Color.Gray),
+                new VertexPositionColor(new Vector3(0, 40, 0), Color.Gray),
+
+                new VertexPositionColor(new Vector3(0, 0, -40), Color.Gray),
+                new VertexPositionColor(new Vector3(0, 0, 40), Color.Gray),
+            };
+
 
             //Vert buffer
             vertexBuffer = new VertexBuffer(GraphicsDevice, typeof(
-                           VertexPositionColor), 3, BufferUsage.
+                           VertexPositionColor), vertices.Length, BufferUsage.
                            WriteOnly);
-            vertexBuffer.SetData<VertexPositionColor>(triangleVertices);
+            vertexBuffer.SetData(vertices);
 
         }
 
@@ -190,8 +205,8 @@ namespace Adelaide.Function2
                     Passes)
             {
                 pass.Apply();
-                GraphicsDevice.DrawPrimitives(PrimitiveType.
-                                              TriangleList, 0, 3);
+                GraphicsDevice.DrawPrimitives(PrimitiveType.TriangleList, 0, 2);
+                GraphicsDevice.DrawPrimitives(PrimitiveType.LineList, 6, 3);
             }
 
 

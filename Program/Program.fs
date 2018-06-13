@@ -1,9 +1,14 @@
-﻿open Adelaide
+﻿open Adelaide.Module
+open FSharp.Charting
 
 [<EntryPoint>]
 let main argv = 
-    printfn "%A" argv
     let form = new System.Windows.Forms.Form()
-    adelaideF2 |> ignore
+    let (pointData, lineData) = adelaideF2
+    let point = Chart.Point pointData
+    let line = Chart.Line lineData
+
+    let combine = Chart.Combine [point; line]
+    combine.ShowChart() |> ignore
     System.Windows.Forms.Application.Run(form)
     0 // retornar um código de saída inteiro
