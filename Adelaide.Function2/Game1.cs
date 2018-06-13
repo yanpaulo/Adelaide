@@ -2,7 +2,10 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using static Adelaide.Module;
+using MN = MathNet.Numerics.LinearAlgebra;
 
 namespace Adelaide.Function2
 {
@@ -19,6 +22,7 @@ namespace Adelaide.Function2
         Vector3 camPosition;
         Matrix projectionMatrix;
         Matrix viewMatrix;
+        private KeyboardState lastState;
         Matrix worldMatrix;
 
         //BasicEffect for rendering
@@ -26,30 +30,33 @@ namespace Adelaide.Function2
 
         //Geometric info
         private VertexPositionColor[] vertices;
+        private VertexPositionColor[] eixo;
+        private VertexPositionColor[] pontos;
+        private VertexPositionColor[] plano;
         VertexBuffer vertexBuffer;
 
         //Orbit
         bool orbit = false;
-
+        
 
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
         }
-
-        /// <summary>
-        /// Allows the game to perform any initialization it needs to before starting to run.
-        /// This is where it can query for any required services and load any non-graphic
-        /// related content.  Calling base.Initialize will enumerate through any components
-        /// and initialize them as well.
-        /// </summary>
+        
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
 
             base.Initialize();
+            InitializeCamera();
+            InitializePlotData();
 
+        }
+
+        private void InitializeCamera()
+        {
             //Setup Camera
             camTarget = new Vector3(0f, 0f, 0f);
             camPosition = new Vector3(0f, 0f, -100f);
@@ -70,18 +77,15 @@ namespace Adelaide.Function2
             basicEffect.VertexColorEnabled = true;
 
             basicEffect.LightingEnabled = false;
-            
-            //Geometry  - a simple triangle about the origin
-            vertices = new[] 
+        }
+
+        private void InitializePlotData()
+        {
+            var treinamento = adelaideF3.Item1;
+            var vetorW = adelaideF3.Item2;
+
+            eixo = new[]
             {
-                new VertexPositionColor(new Vector3(0, 0, 0), Color.Red),
-                new VertexPositionColor(new Vector3(20, 20, 0), Color.Green),
-                new VertexPositionColor(new Vector3(20, 20, Module.f3(20, 20)), Color.Blue),
-                new VertexPositionColor(new Vector3(20, 20, Module.f3(20, 20)), Color.Blue),
-                new VertexPositionColor(new Vector3(0, 0, Module.f3(20, 20)), Color.Green),
-                new VertexPositionColor(new Vector3(0, 0, 0), Color.Red),
-
-
                 new VertexPositionColor(new Vector3(-40, 0, 0), Color.Gray),
                 new VertexPositionColor(new Vector3(40, 0, 0), Color.Gray),
 
@@ -92,41 +96,41 @@ namespace Adelaide.Function2
                 new VertexPositionColor(new Vector3(0, 0, 40), Color.Gray),
             };
 
+            pontos = treinamento.Select(par => new[] {
+                new VertexPositionColor(NewVector3(par.X[1] - 1, par.X[2] - 1, par.Y), Color.Yellow),
+                new VertexPositionColor(NewVector3(par.X[1] - 0, par.X[2] + 1, par.Y), Color.Yellow),
+                new VertexPositionColor(NewVector3(par.X[1] + 1, par.X[2] - 1, par.Y), Color.Yellow),
+            }).SelectMany(v => v).ToArray();
+
+            plano = new[]
+            {
+                new VertexPositionColor(NewVector3(0, 0, 0), Color.Red),
+                new VertexPositionColor(NewVector3(20, 20, 0), Color.Green),
+                new VertexPositionColor(NewVector3(20, 20, saida(vetorW, MNVector(20, 20))), Color.Blue),
+                new VertexPositionColor(NewVector3(20, 20, saida(vetorW, MNVector(20, 20))), Color.Blue),
+                new VertexPositionColor(NewVector3(0, 0, saida(vetorW, MNVector(20, 20))), Color.Red),
+                new VertexPositionColor(NewVector3(0, 0, 0), Color.Red),
+            };
+
+            vertices = new[] { eixo, pontos, plano }.SelectMany(v => v).ToArray();
 
             //Vert buffer
-            vertexBuffer = new VertexBuffer(GraphicsDevice, typeof(
-                           VertexPositionColor), vertices.Length, BufferUsage.
-                           WriteOnly);
-            vertexBuffer.SetData(vertices);
-
+            vertexBuffer = new VertexBuffer(GraphicsDevice, typeof(VertexPositionColor), vertices.Length, BufferUsage.WriteOnly);
+            vertexBuffer.SetData(vertices.ToArray());
         }
-
-        /// <summary>
-        /// LoadContent will be called once per game and is the place to load
-        /// all of your content.
-        /// </summary>
+        
         protected override void LoadContent()
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            // TODO: use this.Content to load your game content here
         }
-
-        /// <summary>
-        /// UnloadContent will be called once per game and is the place to unload
-        /// game-specific content.
-        /// </summary>
+        
         protected override void UnloadContent()
         {
             // TODO: Unload any non ContentManager content here
         }
-
-        /// <summary>
-        /// Allows the game to run logic such as updating the world,
-        /// checking for collisions, gathering input, and playing audio.
-        /// </summary>
-        /// <param name="gameTime">Provides a snapshot of timing values.</param>
+        
         protected override void Update(GameTime gameTime)
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
@@ -161,7 +165,7 @@ namespace Adelaide.Function2
             {
                 camPosition.Z -= 1f;
             }
-            if (Keyboard.GetState().IsKeyDown(Keys.Space))
+            if (!lastState.IsKeyDown(Keys.Space) && Keyboard.GetState().IsKeyDown(Keys.Space))
             {
                 orbit = !orbit;
             }
@@ -176,7 +180,7 @@ namespace Adelaide.Function2
             viewMatrix = Matrix.CreateLookAt(camPosition, camTarget,
                          Vector3.Up);
 
-
+            lastState = Keyboard.GetState();
             base.Update(gameTime);
         }
 
@@ -205,12 +209,22 @@ namespace Adelaide.Function2
                     Passes)
             {
                 pass.Apply();
-                GraphicsDevice.DrawPrimitives(PrimitiveType.TriangleList, 0, 2);
-                GraphicsDevice.DrawPrimitives(PrimitiveType.LineList, 6, 3);
+                var start = 0;
+                GraphicsDevice.DrawPrimitives(PrimitiveType.LineList, start, eixo.Length);
+                start += eixo.Length * 2;
+                GraphicsDevice.DrawPrimitives(PrimitiveType.TriangleList, start, pontos.Length);
+                start += pontos.Length * 3;
+                GraphicsDevice.DrawPrimitives(PrimitiveType.TriangleList, start, plano.Length);
             }
 
 
             base.Draw(gameTime);
         }
+
+        private static Vector3 NewVector3(double x, double y, double z) =>
+            new Vector3((float)x, (float)y, (float)z);
+
+        private static MN.Vector<double> MNVector(double x, double y) =>
+            MN.Vector<double>.Build.Dense(new[] { 1.0, x, y });
     }
 }

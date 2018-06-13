@@ -9,8 +9,8 @@ open MathNet.Numerics.LinearAlgebra
 
 type Par = { X: float Vector; Y: float }
 
-let noise x = 
-    x + 2.0 * (Random.shared.NextDouble() - 0.5)
+let noise rate x = 
+    x + rate * (Random.shared.NextDouble() - 0.5)
 
 let f2 x =
     x
@@ -56,7 +56,7 @@ let adelaideF2 =
     let range = [ 0.0 .. 20.0 ]
     let treinamento = 
         range |>
-        List.map (fun x -> { X = vx x; Y = f2 x |> noise })
+        List.map (fun x -> { X = vx x; Y = f2 x |> noise 2.0 })
 
     let w1 = wn (List.ofSeq treinamento)
 
@@ -69,6 +69,21 @@ let adelaideF2 =
         range |>
         List.map (fun x -> (x, saida w1 (vx x)))
     (pointData, lineData)
+
+let adelaideF3 =
+    let vx x = vector([1.0; x; x])
+    let range = [ 0.0 .. 20.0 ]
+    let treinamento = 
+        range |>
+        List.map (fun x -> { X = vx x; Y = f3 x x |> noise 10.0 })
+
+    let w1 = wn (List.ofSeq treinamento)
+
+    
+    let lineData = 
+        range |>
+        List.map (fun x -> (x, saida w1 (vx x)))
+    (Seq.ofList treinamento, w1)
 
 
 
