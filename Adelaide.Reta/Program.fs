@@ -4,7 +4,7 @@ open FSharp.Charting
 [<EntryPoint>]
 let main argv = 
     let form = new System.Windows.Forms.Form()
-    let (pointData, lineData) = adelaideF2
+    let (pointData, lineData) = adalineXY
     let point = Chart.Point pointData
     let line = Chart.Line lineData
 

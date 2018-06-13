@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using static Adelaide.Module;
 using MN = MathNet.Numerics.LinearAlgebra;
@@ -81,8 +82,8 @@ namespace Adelaide.Function2
 
         private void InitializePlotData()
         {
-            var treinamento = adelaideF3.Item1;
-            var vetorW = adelaideF3.Item2;
+            var treinamento = adalineXYZ.Item1;
+            var vetorW = adalineXYZ.Item2;
 
             eixo = new[]
             {
