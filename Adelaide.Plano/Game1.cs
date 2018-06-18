@@ -38,7 +38,8 @@ namespace Adelaide.Function2
 
         //Orbit
         bool orbit = false;
-        
+
+        Matrix rotation, translation;
 
         public Game1()
         {
@@ -59,7 +60,7 @@ namespace Adelaide.Function2
         {
             //Setup Camera
             camTarget = new Vector3(0f, 0f, 0f);
-            camPosition = new Vector3(0f, 0f, -100f);
+            camPosition = new Vector3(0f, 0f, 0f);
             projectionMatrix = Matrix.CreatePerspectiveFieldOfView(
                                MathHelper.ToRadians(45f),
                                GraphicsDevice.DisplayMode.AspectRatio,
@@ -68,6 +69,9 @@ namespace Adelaide.Function2
                          new Vector3(0f, 1f, 0f));// Y up
             worldMatrix = Matrix.CreateWorld(camTarget, Vector3.
                           Forward, Vector3.Up);
+
+            rotation = Matrix.Identity;
+            translation = Matrix.CreateTranslation(0, 0, -100f);
 
             //BasicEffect
             basicEffect = new BasicEffect(GraphicsDevice);
@@ -139,53 +143,24 @@ namespace Adelaide.Function2
             // TODO: Add your update logic here
             if (Keyboard.GetState().IsKeyDown(Keys.Left))
             {
-                camPosition.X -= 1f;
-                camTarget.X -= 1f;
+                rotation *= Matrix.CreateRotationY(MathHelper.ToRadians(-1f));
             }
             if (Keyboard.GetState().IsKeyDown(Keys.Right))
             {
-                camPosition.X += 1f;
-                camTarget.X += 1f;
+                rotation *= Matrix.CreateRotationY(MathHelper.ToRadians(1f));
             }
             if (Keyboard.GetState().IsKeyDown(Keys.Up))
             {
-                //camPosition.Y -= 1f;
-                //camTarget.Y -= 1f;
-                Matrix rotationMatrix = Matrix.CreateRotationX(
-                                        MathHelper.ToRadians(1f));
-                camPosition = Vector3.Transform(camPosition,
-                              rotationMatrix);
+                rotation *= Matrix.CreateRotationX(MathHelper.ToRadians(-1f));
             }
             if (Keyboard.GetState().IsKeyDown(Keys.Down))
             {
-                //camPosition.Y += 1f;
-                //camTarget.Y += 1f;
-                Matrix rotationMatrix = Matrix.CreateRotationX(
-                                        MathHelper.ToRadians(-1f));
-                camPosition = Vector3.Transform(camPosition,
-                              rotationMatrix);
-            }
-            if (Keyboard.GetState().IsKeyDown(Keys.OemPlus))
-            {
-                camPosition.Z += 1f;
-            }
-            if (Keyboard.GetState().IsKeyDown(Keys.OemMinus))
-            {
-                camPosition.Z -= 1f;
-            }
-            if (!lastState.IsKeyDown(Keys.Space) && Keyboard.GetState().IsKeyDown(Keys.Space))
-            {
-                orbit = !orbit;
+                rotation *= Matrix.CreateRotationX(MathHelper.ToRadians(1f));
             }
 
-            if (orbit)
-            {
-                Matrix rotationMatrix = Matrix.CreateRotationY(
-                                        MathHelper.ToRadians(1f));
-                camPosition = Vector3.Transform(camPosition,
-                              rotationMatrix);
-            }
-            viewMatrix = Matrix.CreateLookAt(camPosition, camTarget,
+            var camPosition = Vector3.Transform(Vector3.Zero, translation * rotation);
+
+            viewMatrix = Matrix.CreateLookAt(camPosition, -1f * camPosition,
                          Vector3.Up);
 
             lastState = Keyboard.GetState();
