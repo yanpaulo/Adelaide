@@ -26,7 +26,7 @@ namespace Adelaide.Function2
         Matrix worldMatrix;
 
 
-        private Vector3 initialCamPosition = new Vector3(15f, 15f, -100f);
+        private Vector3 initialCamPosition = new Vector3(20f, 40f, -100f);
         private Vector3 initialCamTarget = Vector3.Zero;
         private Vector3 camPosition;
         private Vector3 camTarget;
