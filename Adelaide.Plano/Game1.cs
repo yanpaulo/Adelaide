@@ -17,14 +17,21 @@ namespace Adelaide.Function2
     {
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
+        KeyboardState lastState;
 
         //Camera
-        Vector3 camTarget;
-        Vector3 camPosition;
         Matrix projectionMatrix;
         Matrix viewMatrix;
-        private KeyboardState lastState;
         Matrix worldMatrix;
+
+
+        private Vector3 initialCamPosition = new Vector3(15f, 15f, -100f);
+        private Vector3 initialCamTarget = Vector3.Zero;
+        private Vector3 camPosition;
+        private Vector3 camTarget;
+
+        private Matrix rotacao = Matrix.Identity;
+        private Matrix translacao = Matrix.Identity;
 
         //BasicEffect for rendering
         BasicEffect basicEffect;
@@ -35,18 +42,13 @@ namespace Adelaide.Function2
         private VertexPositionColor[] pontos;
         private VertexPositionColor[] plano;
         VertexBuffer vertexBuffer;
-
-        //Orbit
-        bool orbit = false;
-
-        Matrix rotation, translation;
-
+        
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
         }
-        
+
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
@@ -59,19 +61,11 @@ namespace Adelaide.Function2
         private void InitializeCamera()
         {
             //Setup Camera
-            camTarget = new Vector3(0f, 0f, 0f);
-            camPosition = new Vector3(0f, 0f, 0f);
-            projectionMatrix = Matrix.CreatePerspectiveFieldOfView(
-                               MathHelper.ToRadians(45f),
-                               GraphicsDevice.DisplayMode.AspectRatio,
-                1f, 1000f);
-            viewMatrix = Matrix.CreateLookAt(camPosition, camTarget,
-                         new Vector3(0f, 1f, 0f));// Y up
-            worldMatrix = Matrix.CreateWorld(camTarget, Vector3.
-                          Forward, Vector3.Up);
-
-            rotation = Matrix.Identity;
-            translation = Matrix.CreateTranslation(0, 0, -100f);
+            camTarget = initialCamTarget;
+            camPosition = initialCamPosition;
+            projectionMatrix = Matrix.CreatePerspectiveFieldOfView(MathHelper.ToRadians(45f), GraphicsDevice.DisplayMode.AspectRatio, 1f, 1000f);
+            viewMatrix = Matrix.CreateLookAt(camPosition, camTarget, new Vector3(0f, 1f, 0f));// Y up
+            worldMatrix = Matrix.CreateWorld(camTarget, Vector3.Forward, Vector3.Up);
 
             //BasicEffect
             basicEffect = new BasicEffect(GraphicsDevice);
@@ -122,49 +116,89 @@ namespace Adelaide.Function2
             vertexBuffer = new VertexBuffer(GraphicsDevice, typeof(VertexPositionColor), vertices.Length, BufferUsage.WriteOnly);
             vertexBuffer.SetData(vertices.ToArray());
         }
-        
+
         protected override void LoadContent()
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
         }
-        
+
         protected override void UnloadContent()
         {
             // TODO: Unload any non ContentManager content here
         }
-        
+
         protected override void Update(GameTime gameTime)
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
             // TODO: Add your update logic here
-            if (Keyboard.GetState().IsKeyDown(Keys.Left))
-            {
-                rotation *= Matrix.CreateRotationY(MathHelper.ToRadians(-1f));
-            }
-            if (Keyboard.GetState().IsKeyDown(Keys.Right))
-            {
-                rotation *= Matrix.CreateRotationY(MathHelper.ToRadians(1f));
-            }
-            if (Keyboard.GetState().IsKeyDown(Keys.Up))
-            {
-                rotation *= Matrix.CreateRotationX(MathHelper.ToRadians(-1f));
-            }
-            if (Keyboard.GetState().IsKeyDown(Keys.Down))
-            {
-                rotation *= Matrix.CreateRotationX(MathHelper.ToRadians(1f));
-            }
+            UpdateRotation();
+            UpdateStrafe();
 
-            var camPosition = Vector3.Transform(Vector3.Zero, translation * rotation);
+            camPosition = Vector3.Transform(initialCamPosition, translacao);
 
-            viewMatrix = Matrix.CreateLookAt(camPosition, -1f * camPosition,
-                         Vector3.Up);
+            var targetM = translacao * Matrix.CreateTranslation(camPosition * -1f) * rotacao * Matrix.CreateTranslation(camPosition);
+            camTarget = Vector3.Transform(initialCamTarget, targetM);
+
+            viewMatrix = Matrix.CreateLookAt(camPosition, camTarget, Vector3.Up);
 
             lastState = Keyboard.GetState();
             base.Update(gameTime);
+        }
+
+        private void UpdateStrafe()
+        {
+            var translacao = Vector3.Zero;
+
+            if (Keyboard.GetState().IsKeyDown(Keys.W))
+            {
+                translacao += new Vector3(0, 0, 1f);
+            }
+            if (Keyboard.GetState().IsKeyDown(Keys.S))
+            {
+                translacao += new Vector3(0, 0, -1f);
+            }
+
+            if (Keyboard.GetState().IsKeyDown(Keys.A))
+            {
+                translacao += new Vector3(1f, 0, 0);
+            }
+            if (Keyboard.GetState().IsKeyDown(Keys.D))
+            {
+                translacao += new Vector3(-1f, 0, 0);
+            }
+
+            translacao = Vector3.Transform(translacao, rotacao);
+
+            if (Keyboard.GetState().IsKeyDown(Keys.A) || Keyboard.GetState().IsKeyDown(Keys.D))
+            {
+                translacao.Y = 0;
+            }
+
+            this.translacao *= Matrix.CreateTranslation(translacao);
+        }
+
+        private void UpdateRotation()
+        {
+            if (Keyboard.GetState().IsKeyDown(Keys.Left))
+            {
+                rotacao *= Matrix.CreateRotationY(MathHelper.ToRadians(1f));
+            }
+            if (Keyboard.GetState().IsKeyDown(Keys.Right))
+            {
+                rotacao *= Matrix.CreateRotationY(MathHelper.ToRadians(-1f));
+            }
+            if (Keyboard.GetState().IsKeyDown(Keys.Up))
+            {
+                rotacao *= Matrix.CreateRotationX(MathHelper.ToRadians(Math.Sign(camPosition.Z)));
+            }
+            if (Keyboard.GetState().IsKeyDown(Keys.Down))
+            {
+                rotacao *= Matrix.CreateRotationX(MathHelper.ToRadians(-1f * Math.Sign(camPosition.Z)));
+            }
         }
 
         /// <summary>
