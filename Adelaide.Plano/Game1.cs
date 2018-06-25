@@ -15,6 +15,7 @@ namespace Adelaide.Function2
     /// </summary>
     public class Game1 : Game
     {
+        #region Atributos
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
         KeyboardState lastState;
@@ -41,40 +42,13 @@ namespace Adelaide.Function2
         private VertexPositionColor[] eixo;
         private VertexPositionColor[] pontos;
         private VertexPositionColor[] plano;
-        VertexBuffer vertexBuffer;
-        
+        VertexBuffer vertexBuffer; 
+        #endregion
+
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
-        }
-
-        protected override void Initialize()
-        {
-            // TODO: Add your initialization logic here
-
-            base.Initialize();
-            InitializeCamera();
-            InitializePlotData();
-        }
-
-        private void InitializeCamera()
-        {
-            //Setup Camera
-            camTarget = initialCamTarget;
-            camPosition = initialCamPosition;
-            projectionMatrix = Matrix.CreatePerspectiveFieldOfView(MathHelper.ToRadians(45f), GraphicsDevice.DisplayMode.AspectRatio, 1f, 1000f);
-            viewMatrix = Matrix.CreateLookAt(camPosition, camTarget, new Vector3(0f, 1f, 0f));// Y up
-            worldMatrix = Matrix.CreateWorld(camTarget, Vector3.Forward, Vector3.Up);
-
-            //BasicEffect
-            basicEffect = new BasicEffect(GraphicsDevice);
-            basicEffect.Alpha = 1f;
-
-            // Want to see the colors of the vertices
-            basicEffect.VertexColorEnabled = true;
-
-            basicEffect.LightingEnabled = false;
         }
 
         private void InitializePlotData()
@@ -115,6 +89,35 @@ namespace Adelaide.Function2
             //Vert buffer
             vertexBuffer = new VertexBuffer(GraphicsDevice, typeof(VertexPositionColor), vertices.Length, BufferUsage.WriteOnly);
             vertexBuffer.SetData(vertices.ToArray());
+        }
+
+        #region Lógica de jogo
+        protected override void Initialize()
+        {
+            // TODO: Add your initialization logic here
+
+            base.Initialize();
+            InitializeCamera();
+            InitializePlotData();
+        }
+
+        private void InitializeCamera()
+        {
+            //Setup Camera
+            camTarget = initialCamTarget;
+            camPosition = initialCamPosition;
+            projectionMatrix = Matrix.CreatePerspectiveFieldOfView(MathHelper.ToRadians(45f), GraphicsDevice.DisplayMode.AspectRatio, 1f, 1000f);
+            viewMatrix = Matrix.CreateLookAt(camPosition, camTarget, new Vector3(0f, 1f, 0f));// Y up
+            worldMatrix = Matrix.CreateWorld(camTarget, Vector3.Forward, Vector3.Up);
+
+            //BasicEffect
+            basicEffect = new BasicEffect(GraphicsDevice);
+            basicEffect.Alpha = 1f;
+
+            // Want to see the colors of the vertices
+            basicEffect.VertexColorEnabled = true;
+
+            basicEffect.LightingEnabled = false;
         }
 
         protected override void LoadContent()
@@ -242,6 +245,7 @@ namespace Adelaide.Function2
             new Vector3((float)x, (float)y, (float)z);
 
         private static MN.Vector<double> MNVector(double x, double y) =>
-            MN.Vector<double>.Build.Dense(new[] { 1.0, x, y });
+            MN.Vector<double>.Build.Dense(new[] { 1.0, x, y }); 
+        #endregion
     }
 }
