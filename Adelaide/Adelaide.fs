@@ -36,7 +36,8 @@ let squareRootErro t w =
 
 let wn t = 
     (t: Par list) |> ignore
-    let rec wn1 t w =
+    let maxEpoca = 10000
+    let rec wn1 t w epoca =
         let rec wn2 t w e =
             match t with
             | par :: tail  ->
@@ -48,10 +49,10 @@ let wn t =
         let e = erro t.Head w
         let w1 = wn2 t w e
         let se1 = squareErro t w1
-        if se1 < se0 then wn1 t w1 else w1
+        if epoca < maxEpoca && se1 < se0 then wn1 t w1 (epoca + 1) else w1
 
     let w = vector(Random.doubles t.Head.X.Count)
-    wn1 t w
+    wn1 t w 0
 
 
 let adalineXY range =
